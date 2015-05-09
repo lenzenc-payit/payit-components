@@ -9,6 +9,7 @@ object ComponentsBuild extends Build {
     version := "1.0",
     organization := "com.payit",
     scalaVersion := "2.11.4",
+    ivyScala := ivyScala.value map { _.copy(overrideScalaVersion = true) },
     resolvers ++= Seq(
       "Typesafe repository" at "http://repo.typesafe.com/typesafe/releases",
       "Sonatype Releases"  at "http://oss.sonatype.org/content/repositories/releases",
@@ -36,6 +37,8 @@ object ComponentsBuild extends Build {
     settings = commonSettings ++ Seq(
       name := "payit-validation",
       libraryDependencies ++= Seq(
+        "org.specs2" %% "specs2-core" % "3.6" % "test",
+        "org.specs2" % "specs2-scalacheck_2.11" % "3.6-scalaz-7.0.7" % "test"
       )
     )
   ).dependsOn(specs)
