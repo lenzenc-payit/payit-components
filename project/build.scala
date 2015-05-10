@@ -38,7 +38,9 @@ object ComponentsBuild extends Build {
       name := "payit-validation",
       libraryDependencies ++= Seq(
         "org.specs2" %% "specs2-core" % "3.6" % "test",
-        "org.specs2" % "specs2-scalacheck_2.11" % "3.6-scalaz-7.0.7" % "test"
+        "org.specs2" % "specs2-scalacheck_2.11" % "3.6-scalaz-7.0.7" % "test",
+        "joda-time" % "joda-time" % "2.7" % "compile",
+        "org.joda" % "joda-convert" % "1.7" % "compile"
       )
     )
   ).dependsOn(specs)
