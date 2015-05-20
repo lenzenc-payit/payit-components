@@ -5,7 +5,7 @@ import org.specs2.mutable.Specification
 
 class MaxLengthSpec extends Specification with GeneralOps with ValidationMatchers {
 
-  ".isValid" >> {
+  "" >> {
     val rule = MaxLength[String](max = 2)
     "should allow values" >> {
       rule should passValues("a", "ab", null, "")
@@ -15,17 +15,17 @@ class MaxLengthSpec extends Specification with GeneralOps with ValidationMatcher
     }
     "when validation fails" >> {
       "it should have expected key" >> {
-        val result = rule.isValid("abc")
+        val result = rule("abc")
         result should beAnInstanceOf[Failed]
         result.asInstanceOf[Failed].key must_== "maxlength"
       }
       "it should have expected msg" >> {
-        val result = rule.isValid("abc")
+        val result = rule("abc")
         result should beAnInstanceOf[Failed]
         result.asInstanceOf[Failed].msg must_== "maximum is 2 characters"
       }
       "it should have expected params" >> {
-        val result = rule.isValid("abc")
+        val result = rule("abc")
         result should beAnInstanceOf[Failed]
         result.asInstanceOf[Failed].params.size must_== 1
         result.asInstanceOf[Failed].params(0) must_== "2"

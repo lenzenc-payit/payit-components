@@ -10,7 +10,7 @@ class RequiredSpec extends Specification with GeneralOps with ValidationMatchers
   val requiredMsg = "is required"
   val blankMsg = "must not be blank"
 
-  ".isValid" >> {
+  "" >> {
     "using default constructor" >> {
       val rule = Required[String]()
       "should allow values" >> {
@@ -21,24 +21,24 @@ class RequiredSpec extends Specification with GeneralOps with ValidationMatchers
       }
       "when value is NULL" >> {
         "should have expected key" >> {
-          val result = rule.isValid(null)
+          val result = rule(null)
           result should beAnInstanceOf[Failed]
           result.asInstanceOf[Failed].key must_== requiredKey
         }
         "should have expected msg" >> {
-          val result = rule.isValid(null)
+          val result = rule(null)
           result should beAnInstanceOf[Failed]
           result.asInstanceOf[Failed].msg must_== requiredMsg
         }
       }
       "when value is blank" >> {
         "should have expected key" >> {
-          val result = rule.isValid("")
+          val result = rule("")
           result should beAnInstanceOf[Failed]
           result.asInstanceOf[Failed].key must_== blankKey
         }
         "should have expected msg" >> {
-          val result = rule.isValid("")
+          val result = rule("")
           result should beAnInstanceOf[Failed]
           result.asInstanceOf[Failed].msg must_== blankMsg
         }
@@ -54,24 +54,24 @@ class RequiredSpec extends Specification with GeneralOps with ValidationMatchers
       }
       "when value is NULL" >> {
         "should have expected key" >> {
-          val result = rule.isValid(null)
+          val result = rule(null)
           result should beAnInstanceOf[Failed]
           result.asInstanceOf[Failed].key must_== requiredKey
         }
         "should have expected msg" >> {
-          val result = rule.isValid(null)
+          val result = rule(null)
           result should beAnInstanceOf[Failed]
           result.asInstanceOf[Failed].msg must_== requiredMsg
         }
       }
       "when value is blank" >> {
         "should have expected key" >> {
-          val result = rule.isValid("")
+          val result = rule("")
           result should beAnInstanceOf[Failed]
           result.asInstanceOf[Failed].key must_== blankKey
         }
         "should have expected msg" >> {
-          val result = rule.isValid("")
+          val result = rule("")
           result should beAnInstanceOf[Failed]
           result.asInstanceOf[Failed].msg must_== blankMsg
         }
@@ -87,12 +87,12 @@ class RequiredSpec extends Specification with GeneralOps with ValidationMatchers
       }
       "when value is NULL" >> {
         "should have expected key" >> {
-          val result = rule.isValid(null)
+          val result = rule(null)
           result should beAnInstanceOf[Failed]
           result.asInstanceOf[Failed].key must_== requiredKey
         }
         "should have expected msg" >> {
-          val result = rule.isValid(null)
+          val result = rule(null)
           result should beAnInstanceOf[Failed]
           result.asInstanceOf[Failed].msg must_== requiredMsg
         }
@@ -107,7 +107,7 @@ class RequiredSpec extends Specification with GeneralOps with ValidationMatchers
 //    }
 //  }
 
-//  ".isValid" >> {
+//  "" >> {
 //    val rule = TestRule()
 //    "allows" >> {
 //      rule should passValues("test")
@@ -117,7 +117,7 @@ class RequiredSpec extends Specification with GeneralOps with ValidationMatchers
 //    }
 //  }
 
-//  ".isValid" >> {
+//  "" >> {
 //    "using default constructor" >> {
 //      Result.foreach(Seq("1", "2")) { value => value must_== "2" }
 ////      Result.foreach(Seq("1", "foo")) { value => value must_== "foo" }
@@ -129,14 +129,14 @@ class RequiredSpec extends Specification with GeneralOps with ValidationMatchers
 //    (s.startsWith("hello"), s+" doesn't start with hello")
 //  }
 
-//  ".isValid" >> {
+//  "" >> {
 //    "using default constructor" >> {
 //      Fragment.foreach(Seq("dd")) { value => s"value $value should be allowed" >> pending }
 //      Fragment.foreach(Seq("dd")) { value => s"value $value should not be allowed" >> pending }
 //    }
 //  }
 
-//  ".isValid" >> {
+//  "" >> {
 //    "using default constructor" >> {
 //      "rule" | "r" |
 //      100 ! 200 |> { (v, r) =>
@@ -145,7 +145,7 @@ class RequiredSpec extends Specification with GeneralOps with ValidationMatchers
 //    }
 //  }
 
-//  ".isValid" >> {
+//  "" >> {
 //    "using default constructor" >> {
 //      Fragment.foreach(Seq("dd")) { value =>
 //        s"value $value should be allowed" >> {
@@ -216,7 +216,7 @@ class RequiredSpec extends Specification with GeneralOps with ValidationMatchers
 
 //  Piple in test variables into one test; http://stackoverflow.com/questions/6805267/scalatest-or-specs2-with-multiple-test-cases/6805745#6805745
 
-//  ".isValid" >> {
+//  "" >> {
 //    "when value is NULL" >> {
 //      "using default constructor" >> {
 //        "should not be allowed" >> pending
@@ -245,7 +245,7 @@ class RequiredSpec extends Specification with GeneralOps with ValidationMatchers
 //    "when value has trailing and leading spaces" >> pending
 //  }
 //
-//  ".isValid" >> {
+//  "" >> {
 //    "using default constructor" >> {
 //      "when value is null"
 ////      "should not allow null value" >> pending

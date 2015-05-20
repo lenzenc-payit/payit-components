@@ -11,7 +11,7 @@ trait ValidationMatchers extends Specification {
   def passValues[T](values: T*): Matcher[ValidationRule[T]] = { rule: ValidationRule[T] =>
     var failed = mutable.Seq.empty[T]
     values.foreach { v =>
-      rule.isValid(v) match {
+      rule(v) match {
         case Passed(v) => Nil
         case _ => failed = failed :+ v
       }
@@ -22,7 +22,7 @@ trait ValidationMatchers extends Specification {
   def failValues[T](values: T*): Matcher[ValidationRule[T]] = { rule: ValidationRule[T] =>
     var passed = mutable.Seq.empty[T]
     values.foreach { v =>
-      rule.isValid(v) match {
+      rule(v) match {
         case Passed(_) => passed = passed :+ v
         case _ => Nil
       }
