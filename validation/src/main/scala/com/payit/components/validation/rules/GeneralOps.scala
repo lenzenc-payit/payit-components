@@ -5,9 +5,9 @@ trait GeneralOps {
   type HasLength = Any { def length: Int }
 
   case class Required[T](allowBlank: Boolean = false) extends ValidationRule[T] {
-    def apply(value: T): Result = value match {
-      case null => Failed("required", "is required")
-      case _ => if (!allowBlank && value.toString.trim.isEmpty) Failed("blank", "must not be blank") else Passed[T](value)
+    def apply(value: T): Either[RuleViolation, T] = value match {
+      case null => Left(RuleViolation("required", "is required"))
+      case _ => if (!allowBlank && value.toString.trim.isEmpty) Left(RuleViolation("blank", "must not be blank")) else Right(value)
     }
   }
 
@@ -17,9 +17,9 @@ trait GeneralOps {
 
     require(max >= 0, "max can not be less than ZERO")
 
-    def apply(value: T): Result = value match {
-      case x if x != null && x.length > max => Failed("maxlength", s"maximum is $max characters", Vector(max.toString))
-      case _ => Passed[T](value)
+    def apply(value: T): Either[RuleViolation, T] = value match {
+      case x if x != null && x.length > max => Left(RuleViolation("maxlength", s"maximum is $max characters", Vector(max.toString)))
+      case _ => Right(value)
     }
   }
 

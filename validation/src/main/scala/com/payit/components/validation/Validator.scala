@@ -1,3 +1,5 @@
 package com.payit.components.validation
 
-trait Validator[T] extends (T => Validated[T])
+import com.payit.components.validation.rules.RuleViolation
+
+trait Validator[T] extends (T => Either[Map[String, Seq[RuleViolation]], T])

@@ -1,6 +1,6 @@
 package com.payit.components.validation
 
-import com.payit.components.validation.rules.{Passed, ValidationRule}
+import com.payit.components.validation.rules.ValidationRule
 import org.specs2.matcher.Matcher
 import org.specs2.mutable.Specification
 
@@ -12,7 +12,7 @@ trait ValidationMatchers extends Specification {
     var failed = mutable.Seq.empty[T]
     values.foreach { v =>
       rule(v) match {
-        case Passed(v) => Nil
+        case Right(v) => Nil
         case _ => failed = failed :+ v
       }
     }
@@ -23,7 +23,7 @@ trait ValidationMatchers extends Specification {
     var passed = mutable.Seq.empty[T]
     values.foreach { v =>
       rule(v) match {
-        case Passed(_) => passed = passed :+ v
+        case Right(_) => passed = passed :+ v
         case _ => Nil
       }
     }
