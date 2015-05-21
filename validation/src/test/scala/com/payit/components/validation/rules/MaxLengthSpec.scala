@@ -15,7 +15,7 @@ class MaxLengthSpec extends Specification with GeneralOps with ValidationMatcher
     }
     "when validation fails" >> {
       "it should have expected RuleViolation" >> {
-        rule("abc") should beLeft(RuleViolation("maxlength", "maximum is 2 characters", Vector("2")))
+        rule("abc") should beFailing(RuleViolation("maxlength", "maximum is 2 characters", Vector("2")))
       }
     }
     "when max is set to ZERO" >> {

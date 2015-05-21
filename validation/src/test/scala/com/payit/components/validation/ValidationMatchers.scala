@@ -5,14 +5,15 @@ import org.specs2.matcher.Matcher
 import org.specs2.mutable.Specification
 
 import scala.collection.mutable
+import scalaz.Success
 
-trait ValidationMatchers extends Specification {
+trait ValidationMatchers extends Specification with org.specs2.scalaz.ValidationMatchers {
 
   def passValues[T](values: T*): Matcher[ValidationRule[T]] = { rule: ValidationRule[T] =>
     var failed = mutable.Seq.empty[T]
     values.foreach { v =>
       rule(v) match {
-        case Right(v) => Nil
+        case Success(v) => Nil
         case _ => failed = failed :+ v
       }
     }
@@ -23,7 +24,7 @@ trait ValidationMatchers extends Specification {
     var passed = mutable.Seq.empty[T]
     values.foreach { v =>
       rule(v) match {
-        case Right(_) => passed = passed :+ v
+        case Success(_) => passed = passed :+ v
         case _ => Nil
       }
     }

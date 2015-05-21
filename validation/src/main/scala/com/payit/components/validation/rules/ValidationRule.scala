@@ -1,3 +1,5 @@
 package com.payit.components.validation.rules
 
-trait ValidationRule[T] extends (T => Either[RuleViolation, T])
+import scalaz.Validation
+
+trait ValidationRule[T] extends (T => Validation[RuleViolation, T])

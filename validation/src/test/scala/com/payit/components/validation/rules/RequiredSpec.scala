@@ -21,12 +21,12 @@ class RequiredSpec extends Specification with GeneralOps with ValidationMatchers
       }
       "when value is NULL" >> {
         "it should have expected RuleViolation" >> {
-          rule(null) should beLeft(RuleViolation(requiredKey, requiredMsg))
+          rule(null) should beFailing(RuleViolation(requiredKey, requiredMsg))
         }
       }
       "when value is blank" >> {
         "it should have expected RuleViolation" >> {
-          rule("") should beLeft(RuleViolation(blankKey, blankMsg))
+          rule("") should beFailing(RuleViolation(blankKey, blankMsg))
         }
       }
     }
@@ -40,12 +40,12 @@ class RequiredSpec extends Specification with GeneralOps with ValidationMatchers
       }
       "when value is NULL" >> {
         "it should have expected RuleViolation" >> {
-          rule(null) should beLeft(RuleViolation(requiredKey, requiredMsg))
+          rule(null) should beFailing(RuleViolation(requiredKey, requiredMsg))
         }
       }
       "when value is blank" >> {
         "it should have expected RuleViolation" >> {
-          rule("") should beLeft(RuleViolation(blankKey, blankMsg))
+          rule("") should beFailing(RuleViolation(blankKey, blankMsg))
         }
       }
     }
@@ -59,7 +59,7 @@ class RequiredSpec extends Specification with GeneralOps with ValidationMatchers
       }
       "when value is NULL" >> {
         "it should have expected RuleViolation" >> {
-          rule(null) should beLeft(RuleViolation(requiredKey, requiredMsg))
+          rule(null) should beFailing(RuleViolation(requiredKey, requiredMsg))
         }
       }
     }
