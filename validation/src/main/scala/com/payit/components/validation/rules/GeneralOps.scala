@@ -26,4 +26,11 @@ trait GeneralOps {
     }
   }
 
+  case class StartsWith(str: String) extends ValidationRule[String] {
+    def apply(value: String): Validation[RuleViolation, String] = value match {
+      case s if s.startsWith(value) => value.success
+      case _ => failed("startswith", s"should start with $value", Vector(value))
+    }
+  }
+
 }
