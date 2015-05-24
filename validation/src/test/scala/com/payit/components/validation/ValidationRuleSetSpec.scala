@@ -1,11 +1,9 @@
 package com.payit.components.validation
 
-import com.payit.components.specs.SpecScope
 import com.payit.components.validation.rules.{RuleViolation, GeneralOps, ValidationRule}
 import org.specs2.mutable.Specification
 
 import scalaz._
-import Scalaz._
 
 class ValidationRuleSetSpec extends Specification with ValidationMatchers with GeneralOps {
 
