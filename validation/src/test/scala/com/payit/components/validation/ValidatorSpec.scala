@@ -5,7 +5,6 @@ import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
 
 import scalaz._
-import Scalaz._
 
 class ValidatorSpec extends Specification with ValidationMatchers with Mockito {
 
@@ -36,16 +35,14 @@ class ValidatorSpec extends Specification with ValidationMatchers with Mockito {
         }
       }
       "against multiple ValidationRuleSets" >> {
+        val ruleSet1 = mockFailedRuleSet("v1", "key1", "msg1", model)
+        val ruleSet2 = mockFailedRuleSet("v2", "key2", "msg1", model)
         "it should return a map with expected keys" >> {
-          val ruleSet1 = mockFailedRuleSet("v1", "key1", "msg1", model)
-          val ruleSet2 = mockFailedRuleSet("v2", "key2", "msg1", model)
           validator(ruleSet1, ruleSet2)(model) should beFailing.like { case failure =>
             failure.failures must haveKeys("v1", "v2")
           }
         }
         "it should return a map with expected RuleViolations" >> {
-          val ruleSet1 = mockFailedRuleSet("v1", "key1", "msg1", model)
-          val ruleSet2 = mockFailedRuleSet("v2", "key2", "msg1", model)
           validator(ruleSet1, ruleSet2)(model) should beFailing.like { case failure =>
             val violations1 = failure.failures.get("v1")
             val violations2 = failure.failures.get("v2")
@@ -57,15 +54,14 @@ class ValidatorSpec extends Specification with ValidationMatchers with Mockito {
         }
       }
       "when multiple ValidationRuleSets have the same paramName" >> {
+        val ruleSet1 = mockFailedRuleSet("v1", "key1", "msg1", model)
         "it should return a map with expected key" >> {
-          val ruleSet1 = mockFailedRuleSet("v1", "key1", "msg1", model)
           val ruleSet2 = mockFailedRuleSet("v1", "key2", "msg1", model)
           validator(ruleSet1, ruleSet2)(model) should beFailing.like { case failure =>
             failure.failures must haveKeys("v1")
           }
         }
         "it should return a map with expected combines RuleViolations" >> {
-          val ruleSet1 = mockFailedRuleSet("v1", "key1", "msg1", model)
           val ruleSet2 = mockFailedRuleSet("v1", "key2", "msg1", model)
           validator(ruleSet1, ruleSet2)(model) should beFailing.like { case failure =>
             val violations = failure.failures.get("v1")
@@ -75,7 +71,6 @@ class ValidatorSpec extends Specification with ValidationMatchers with Mockito {
         }
         "and there are duplicated RuleViolations" >> {
           "it should return a map with filtered out duplicates" >> {
-            val ruleSet1 = mockFailedRuleSet("v1", "key1", "msg1", model)
             val ruleSet2 = mockFailedRuleSet("v1", "key1", "msg1", model)
             validator(ruleSet1, ruleSet2)(model) should beFailing.like { case failure =>
               failure.failures must haveKeys("v1")

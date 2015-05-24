@@ -28,8 +28,7 @@ trait Validator[T] extends (T => Validation[ValidationFailure, T]) {
 
   private def concat(v1: Vector[RuleViolation], v2: Vector[RuleViolation]): Vector[RuleViolation] = {
     val keys = v1.map(_.key)
-    val toAdd = v2.filter { v => !keys.contains(v.key) }
-    v1 ++ toAdd
+    v1 ++ v2.filter { v => !keys.contains(v.key) }
   }
 
 }
