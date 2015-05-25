@@ -42,7 +42,9 @@ object ComponentsBuild extends Build {
         "joda-time" % "joda-time" % "2.7" % "compile",
         "org.joda" % "joda-convert" % "1.7" % "compile",
         "org.scalaz" %% "scalaz-core" % "7.1.2" % "compile",
-        "org.typelevel" %% "scalaz-specs2" % "0.3.0" % "test"
+        "org.typelevel" %% "scalaz-specs2" % "0.3.0" % "test",
+        "org.scalamacros" % "resetallattrs_2.11" % "1.0.0-M1" % "compile",
+        "org.scala-lang" % "scala-compiler" % "2.11.6" % "compile"
       )
     )
   ).dependsOn(specs)
