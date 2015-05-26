@@ -9,7 +9,7 @@ trait MacroHelper[C <: Context] {
   import context.universe._
   import org.scalamacros.resetallattrs._
 
-  def resetAttr(tree: Tree): Tree = context.resetAllAttrs(tree)
+  def resetAttrs(tree: Tree): Tree = context.resetAllAttrs(tree)
 
 }
 
