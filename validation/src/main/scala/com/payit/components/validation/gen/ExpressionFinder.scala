@@ -18,7 +18,7 @@ trait ExpressionFinder[C <: Context] extends PatternHelper[C] with MacroHelper[C
   }
 
   private def extractValidationRule(t: Tree): List[Tree] = collectFromPattern(t) {
-    case t if t.tpe <:< ruleType => t
+    case t if t.tpe <:< ruleType => resetAttrs(t)
   }
 
   object KeySelector {

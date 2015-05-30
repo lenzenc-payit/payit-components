@@ -17,13 +17,14 @@ class ValidatorGenerator[C <: Context, T : C#WeakTypeTag](val context: C, v: C#E
 
   val rewriteValidationRuleSet: TransformAST = {
     case ValidationExprMatcher(ve: ValidationExpr) => {
-      q"""
+      val rs = q"""
         new com.payit.components.validation.ValidationRuleSet[${weakTypeOf[ T ]},${ve.validationObject.tpe.typeSymbol}] {
-          val paramName = ${ve.key}
+          val paramName = ${resetAttrs(ve.key)}
           val mapper = { ${prototype} => ${resetAttrs(ve.validationObject)} }
           val rules = ${ve.rules.toVector}
         }
       """
+      resetAttrs(rs)
     }
   }
 
