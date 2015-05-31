@@ -3,7 +3,7 @@ package com.payit.components.validation.rules
 import com.payit.components.validation.ValidationMatchers
 import org.specs2.mutable.Specification
 
-class MaxLengthSpec extends Specification with GeneralOps with ValidationMatchers {
+class MaxLengthSpec extends Specification with StringOps with ValidationMatchers {
 
   ".apply" >> {
     val rule = MaxLength[String](max = 2)
