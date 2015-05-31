@@ -39,4 +39,23 @@ trait GeneralOps {
 
   }
 
+  case class BetweenLength[T <% HasLength](min: Int, max: Int) extends ValidationRule[T] {
+
+    require(min >= 0, "min can not be less than ZERO")
+    require(max >= 0, "max can not be less than ZERO")
+
+    def apply(value: T): Validation[RuleViolation, T] = MinLength[T](min).apply(value) match {
+      case Failure(f) => buildFailure
+      case Success(_) => MaxLength[T](max).apply(value) match {
+        case Failure(f) => buildFailure
+        case Success(_) => succeeded(value)
+      }
+    }
+
+    protected def buildFailure: Validation[RuleViolation, T] = {
+      failed("betweenlength", s"should be between $min and $max characters", Vector[String](min.toString, max.toString))
+    }
+
+  }
+
 }
