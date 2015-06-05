@@ -3,41 +3,41 @@ package com.payit.components.validation.rules
 import com.payit.components.validation.ValidationMatchers
 import org.specs2.mutable.Specification
 
-class LessThanSpec extends Specification with ValidationMatchers with OrderingRules {
+class GreaterThanOrEqualSpec extends Specification with ValidationMatchers with OrderingRules {
 
   ".apply" >> {
-    val rule = LessThan[Int](5)
+    val rule = GreaterThanOrEqual[Int](5)
     "it should allow values" >> {
-      rule should passValues(4, 3, 2)
+      rule should passValues(5, 6, 7, 10)
     }
     "it should not allow values" >> {
-      rule should failValues(6, 7)
+      rule should failValues(4, 3)
     }
     "when successful" >> {
       "it should return value under test" >> {
-        rule(4) should beSuccessful(4)
+        rule(10) should beSuccessful(10)
       }
     }
     "when fails" >> {
       "it should have correct rule violation key" >> {
-        rule(6) should beFailing.like { case f => f.key must_== "lessthan" }
+        rule(2) should beFailing.like { case f => f.key must_== "greaterthanorequal" }
       }
       "it should have correct rule violation message" >> {
-        rule(6) should beFailing.like { case f => f.message must_== "should be less than 5" }
+        rule(2) should beFailing.like { case f => f.message must_== "should be greater than or equal to 5" }
       }
       "it should have correct rule violation params" >> {
-        rule(6) should beFailing.like { case f => f.params should contain(exactly("5")) }
+        rule(2) should beFailing.like { case f => f.params should contain(exactly("5")) }
       }
     }
     "when rule value is NULL" >> {
       "it should fail" >> {
-        val rule = LessThan[String]("Testing")
+        val rule = GreaterThanOrEqual[String]("Testing")
         rule(null) should beFailing
       }
     }
     "when compare value is NULL" >> {
       "it should throw exception" >> {
-        LessThan[String](null) must throwA[IllegalArgumentException](message = "compareTo value can not be NULL")
+        GreaterThanOrEqual[String](null) must throwA[IllegalArgumentException](message = "compareTo value can not be NULL")
       }
     }
   }

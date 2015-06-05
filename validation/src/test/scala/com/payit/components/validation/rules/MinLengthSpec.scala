@@ -3,7 +3,7 @@ package com.payit.components.validation.rules
 import com.payit.components.validation.ValidationMatchers
 import org.specs2.mutable.Specification
 
-class MinLengthSpec extends Specification with GeneralOps with ValidationMatchers {
+class MinLengthSpec extends Specification with GeneralRules with ValidationMatchers {
 
   ".apply" >> {
     val rule = MinLength[String](2)

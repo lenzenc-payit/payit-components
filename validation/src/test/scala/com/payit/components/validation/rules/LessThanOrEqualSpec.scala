@@ -3,12 +3,12 @@ package com.payit.components.validation.rules
 import com.payit.components.validation.ValidationMatchers
 import org.specs2.mutable.Specification
 
-class LessThanSpec extends Specification with ValidationMatchers with OrderingRules {
+class LessThanOrEqualSpec extends Specification with ValidationMatchers with OrderingRules {
 
   ".apply" >> {
-    val rule = LessThan[Int](5)
+    val rule = LessThanOrEqual[Int](5)
     "it should allow values" >> {
-      rule should passValues(4, 3, 2)
+      rule should passValues(5, 4, 3, 2)
     }
     "it should not allow values" >> {
       rule should failValues(6, 7)
@@ -20,10 +20,10 @@ class LessThanSpec extends Specification with ValidationMatchers with OrderingRu
     }
     "when fails" >> {
       "it should have correct rule violation key" >> {
-        rule(6) should beFailing.like { case f => f.key must_== "lessthan" }
+        rule(6) should beFailing.like { case f => f.key must_== "lessthanorequal" }
       }
       "it should have correct rule violation message" >> {
-        rule(6) should beFailing.like { case f => f.message must_== "should be less than 5" }
+        rule(6) should beFailing.like { case f => f.message must_== "should be less than or equal to 5" }
       }
       "it should have correct rule violation params" >> {
         rule(6) should beFailing.like { case f => f.params should contain(exactly("5")) }
@@ -31,13 +31,13 @@ class LessThanSpec extends Specification with ValidationMatchers with OrderingRu
     }
     "when rule value is NULL" >> {
       "it should fail" >> {
-        val rule = LessThan[String]("Testing")
+        val rule = LessThanOrEqual[String]("Testing")
         rule(null) should beFailing
       }
     }
     "when compare value is NULL" >> {
       "it should throw exception" >> {
-        LessThan[String](null) must throwA[IllegalArgumentException](message = "compareTo value can not be NULL")
+        LessThanOrEqual[String](null) must throwA[IllegalArgumentException](message = "compareTo value can not be NULL")
       }
     }
   }
