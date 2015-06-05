@@ -56,4 +56,18 @@ trait OrderingRules {
 
   }
 
+  case class Between[T : Ordering](lower: T, upper: T)(implicit ev: Ordering[ T ]) extends ValidationRule[T] {
+
+    require(lower != null, "lower compareTo value can not be NULL")
+    require(upper != null, "upper compareTo value can not be NULL")
+
+    def apply(value: T): Validation[RuleViolation, T] = {
+      if (value != null && ev.gteq(value, lower) && ev.lteq(value, upper)) succeeded(value) else failed(
+        "between",
+        s"should be between $lower and $upper",
+        Vector(lower.toString, upper.toString))
+    }
+
+  }
+
 }
