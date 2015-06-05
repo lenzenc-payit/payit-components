@@ -43,4 +43,17 @@ trait OrderingRules {
 
   }
 
+  case class LessThanOrEqual[T : Ordering](compareTo: T)(implicit ev: Ordering[ T ]) extends ValidationRule[T] {
+
+    require(compareTo != null, "compareTo value can not be NULL")
+
+    def apply(value: T): Validation[RuleViolation, T] = {
+      if (value != null && ev.lteq(value, compareTo)) succeeded(value) else failed(
+        "lessthanorequal",
+        s"should be less than or equal to $compareTo",
+        Vector(compareTo.toString))
+    }
+
+  }
+
 }
