@@ -17,4 +17,17 @@ trait OrderingRules {
 
   }
 
+  case class GreaterThanOrEqual[T : Ordering](compareTo: T)(implicit ev: Ordering[ T ]) extends ValidationRule[T] {
+
+    require(compareTo != null, "compareTo value can not be NULL")
+
+    def apply(value: T): Validation[RuleViolation, T] = {
+      if (value != null && ev.gteq(value, compareTo)) succeeded(value) else failed(
+        "greaterthanorequal",
+        s"should be greater than or equal to $compareTo",
+        Vector(compareTo.toString))
+    }
+
+  }
+
 }
