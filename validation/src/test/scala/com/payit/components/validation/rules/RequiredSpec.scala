@@ -3,7 +3,7 @@ package com.payit.components.validation.rules
 import com.payit.components.validation.ValidationMatchers
 import org.specs2.mutable.Specification
 
-class RequiredSpec extends Specification with GeneralRules with ValidationMatchers {
+class RequiredSpec extends Specification with GeneralOps with ValidationMatchers {
 
   val requiredKey = "required"
   val blankKey = "blank"

@@ -1,11 +1,11 @@
 package com.payit.components.validation
 
-import com.payit.components.validation.rules.{RuleViolation, GeneralRules, ValidationRule}
+import com.payit.components.validation.rules.{RuleViolation, GeneralOps, ValidationRule}
 import org.specs2.mutable.Specification
 
 import scalaz._
 
-class ValidationRuleSetSpec extends Specification with ValidationMatchers with GeneralRules {
+class ValidationRuleSetSpec extends Specification with ValidationMatchers with GeneralOps {
 
   case class TestModel(v1: String = "Value1", v2: String = "Value2")
 

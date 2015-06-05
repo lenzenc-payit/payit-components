@@ -1,11 +1,11 @@
 package com.payit.components
 
 import com.payit.components.validation.gen.ValidatorMacro
-import com.payit.components.validation.rules.{OrderingRules, StringRules, ValidationRule, GeneralRules}
+import com.payit.components.validation.rules.{StringOps, ValidationRule, GeneralOps}
 
 import language.experimental.macros
 
-package object validation extends GeneralRules with StringRules with OrderingRules {
+package object validation extends GeneralOps with StringOps {
 
   def validations[T](f: T => Unit): Validator[T] = macro ValidatorMacro.apply[T]
 

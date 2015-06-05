@@ -3,7 +3,7 @@ package com.payit.components.validation.rules
 import com.payit.components.validation.ValidationMatchers
 import org.specs2.mutable.Specification
 
-class StartsWithSpec extends Specification with StringRules with ValidationMatchers {
+class StartsWithSpec extends Specification with StringOps with ValidationMatchers {
 
   ".apply" >> {
     val rule = StartsWith("Test")
