@@ -2,7 +2,7 @@ package com.payit.components.validation.rules
 
 import scalaz.Validation
 
-trait StringOps {
+trait StringRules {
 
   case class StartsWith(str: String) extends ValidationRule[String] {
     def apply(value: String): Validation[RuleViolation, String] = value match {

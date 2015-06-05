@@ -3,7 +3,7 @@ package com.payit.components.validation.rules
 import com.payit.components.validation.ValidationMatchers
 import org.specs2.mutable.Specification
 
-class BetweenLengthSpec extends Specification with GeneralOps with ValidationMatchers {
+class BetweenLengthSpec extends Specification with GeneralRules with ValidationMatchers {
 
   ".apply" >> {
     val rule = BetweenLength[String](min = 2, max = 4)

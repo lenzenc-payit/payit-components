@@ -3,7 +3,7 @@ package com.payit.components.validation.rules
 import scalaz._
 import Scalaz._
 
-trait GeneralOps {
+trait GeneralRules {
 
   type HasLength = Any { def length: Int }
 
