@@ -1,16 +1,13 @@
 package com.payit.components.validation.rules
 
-import scalaz._
-import Scalaz._
+import com.payit.components.validation.{Fail, Success, Validated}
 
-trait ValidationRule[T] extends (T => Validation[RuleViolation, T]) {
+trait ValidationRule[T] extends (T => Validated[RuleFailure, T]) {
 
-  def succeeded(value: T): Validation[RuleViolation, T] = value.success
+  def succeeded(value: T): Validated[RuleFailure, T] = Success(value)
 
-  def failed(violation: RuleViolation): Validation[RuleViolation, T] = violation.failure
-
-  def failed(key: String, message: String, params: Vector[String] = Vector.empty[String]): Validation[RuleViolation, T] = {
-    failed(RuleViolation(key, message, params))
+  def failed(ruleKey: String, message: String, params: Seq[String] = Seq.empty[String]): Validated[RuleFailure, T] = {
+    Fail(RuleFailure(ruleKey, message, params))
   }
 
 }

@@ -1,7 +1,7 @@
 package com.payit.components.validation.rules
 
-import com.payit.components.validation.ValidationMatchers
 import org.specs2.mutable.Specification
+import org.specs2.validation.ValidationMatchers
 
 class RequiredSpec extends Specification with GeneralRules with ValidationMatchers {
 
@@ -21,12 +21,16 @@ class RequiredSpec extends Specification with GeneralRules with ValidationMatche
       }
       "when value is NULL" >> {
         "it should have expected RuleViolation" >> {
-          rule(null) should beFailing(RuleViolation(requiredKey, requiredMsg))
+          rule(null) should beFailing.like { case f =>
+              f.ruleKey must_== requiredKey
+              f.message must_== requiredMsg
+          }
+          rule(null) should beFailing(RuleFailure(requiredKey, requiredMsg))
         }
       }
       "when value is blank" >> {
         "it should have expected RuleViolation" >> {
-          rule("") should beFailing(RuleViolation(blankKey, blankMsg))
+          rule("") should beFailing(RuleFailure(blankKey, blankMsg))
         }
       }
     }
@@ -40,12 +44,12 @@ class RequiredSpec extends Specification with GeneralRules with ValidationMatche
       }
       "when value is NULL" >> {
         "it should have expected RuleViolation" >> {
-          rule(null) should beFailing(RuleViolation(requiredKey, requiredMsg))
+          rule(null) should beFailing(RuleFailure(requiredKey, requiredMsg))
         }
       }
       "when value is blank" >> {
         "it should have expected RuleViolation" >> {
-          rule("") should beFailing(RuleViolation(blankKey, blankMsg))
+          rule("") should beFailing(RuleFailure(blankKey, blankMsg))
         }
       }
     }
@@ -59,7 +63,7 @@ class RequiredSpec extends Specification with GeneralRules with ValidationMatche
       }
       "when value is NULL" >> {
         "it should have expected RuleViolation" >> {
-          rule(null) should beFailing(RuleViolation(requiredKey, requiredMsg))
+          rule(null) should beFailing(RuleFailure(requiredKey, requiredMsg))
         }
       }
     }

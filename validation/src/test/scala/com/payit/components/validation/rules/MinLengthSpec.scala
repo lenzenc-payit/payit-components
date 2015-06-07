@@ -1,7 +1,7 @@
 package com.payit.components.validation.rules
 
-import com.payit.components.validation.ValidationMatchers
 import org.specs2.mutable.Specification
+import org.specs2.validation.ValidationMatchers
 
 class MinLengthSpec extends Specification with GeneralRules with ValidationMatchers {
 
@@ -19,8 +19,8 @@ class MinLengthSpec extends Specification with GeneralRules with ValidationMatch
       }
     }
     "when fails" >> {
-      "it should have correct rule violation key" >> {
-        rule("T") should beFailing.like { case f => f.key must_== "minlength" }
+      "it should have correct rule violation ruleKey" >> {
+        rule("T") should beFailing.like { case f => f.ruleKey must_== "minlength" }
       }
       "it should have correct rule violation message" >> {
         rule("T") should beFailing.like { case f => f.message must_== "minimum is 2 characters" }

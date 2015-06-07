@@ -3,17 +3,15 @@ package com.payit.components.validation.gen
 import org.specs2.matcher.Matcher
 import org.specs2.mutable.Specification
 
-import com.payit.components.validation.rules.{RuleViolation, ValidationRule}
+import com.payit.components.validation.rules.{RuleFailure, ValidationRule}
 import com.payit.components.validation._
-
-import scalaz.Validation
 
 class ValidatorMacroSpec extends Specification {
 
   case class Person(name: String, age: Int)
 
   case class IntRule() extends ValidationRule[Int] {
-    def apply(value: Int): Validation[RuleViolation, Int] = succeeded(value)
+    def apply(value: Int): Validated[RuleFailure, Int] = succeeded(value)
   }
 
   ".apply" >> {
@@ -90,16 +88,16 @@ class ValidatorMacroSpec extends Specification {
   def maxLength: String = classOf[MaxLength[String]].getName
   def intRule: String = classOf[IntRule].getName
 
-  def haveRule(paramName: String, ruleClassNames: String*): Matcher[Validator[_]] = { v: Validator[_] =>
-    val ruleSets = v.ruleSets.map(_.paramName).filter(_ == paramName)
+  def haveRule(key: String, ruleClassNames: String*): Matcher[Validator[_]] = { v: Validator[_] =>
+    val ruleSets = v.ruleSets.map(_.key).filter(_ == key)
     if (ruleSets.size == 0 || ruleSets.size > 1) {
-      ruleSets should contain(exactly(paramName))
+      ruleSets should contain(exactly(key))
     } else {
-      v.ruleSets.filter(_.paramName == paramName).head.rules.map(_.getClass.getName) should contain(exactly(ruleClassNames: _*))
+      v.ruleSets.filter(_.key == key).head.rules.map(_.getClass.getName) should contain(exactly(ruleClassNames: _*))
     }
   }
 
-  def haveRuleSet(names: String*) = ((_:Validator[_]).ruleSets.map(_.paramName)) ^^ contain(exactly(names:_*))
+  def haveRuleSet(names: String*) = ((_:Validator[_]).ruleSets.map(_.key)) ^^ contain(exactly(names:_*))
 
 
 }

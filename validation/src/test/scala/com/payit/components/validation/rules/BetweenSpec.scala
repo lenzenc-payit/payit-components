@@ -1,7 +1,7 @@
 package com.payit.components.validation.rules
 
-import com.payit.components.validation.ValidationMatchers
 import org.specs2.mutable.Specification
+import org.specs2.validation.ValidationMatchers
 
 class BetweenSpec extends Specification with ValidationMatchers with OrderingRules {
 
@@ -19,8 +19,8 @@ class BetweenSpec extends Specification with ValidationMatchers with OrderingRul
       }
     }
     "when fails" >> {
-      "it should have correct rule violation key" >> {
-        rule(6) should beFailing.like { case f => f.key must_== "between" }
+      "it should have correct rule violation ruleKey" >> {
+        rule(6) should beFailing.like { case f => f.ruleKey must_== "between" }
       }
       "it should have correct rule violation message" >> {
         rule(6) should beFailing.like { case f => f.message must_== "should be between 1 and 5" }
