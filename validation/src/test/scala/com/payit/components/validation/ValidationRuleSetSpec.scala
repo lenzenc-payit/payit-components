@@ -25,7 +25,12 @@ class ValidationRuleSetSpec extends Specification with ValidationMatchers with G
       "it should return Failure" >> {
         val model = TestModel()
         val ruleSet = buildRuleSet(Vector(MaxLength(2)), model)
-        ruleSet(model) should beFailing
+        ruleSet(model) should beFailing(Seq(ValidationFailure(
+          ParentKey("parent"),
+          "v1",
+          "maxlength",
+          "maximum is 2 characters",
+          Seq("2"))))
       }
       "it should return correct ValidationFailure" >> {
         val failures = failureRun(Vector(MaxLength(2)))
@@ -76,7 +81,7 @@ class ValidationRuleSetSpec extends Specification with ValidationMatchers with G
 
   private def buildRuleSet(ruleVector: Vector[ValidationRule[String]], model: TestModel = TestModel()): ValidationRuleSet[TestModel, String] = {
     new ValidationRuleSet[TestModel, String] {
-      val parentKey = ParentKey()
+      val parentKey = ParentKey("parent")
       val key = "v1"
       val mapper: (TestModel) => String = { m => m.v1 }
       val rules = ruleVector
