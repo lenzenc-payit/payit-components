@@ -1,6 +1,6 @@
 package com.payit.components.validation
 
-import com.payit.components.validation.rules.{RuleFailure, ValidationRule}
+import com.payit.components.validation.rules.ValidationRule
 
 trait ValidationRuleSet[T, V] extends (T => Validated[Seq[ValidationFailure], T]) {
   def parentKey: ParentKey
