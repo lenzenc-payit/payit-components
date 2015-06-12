@@ -1,21 +1,24 @@
 package com.payit.components.validation
 
-trait Validator[T] extends (T => Validated[Seq[ValidationFailure], T]) {
+case class FailureKey(key: String, parentKey: ParentKey = ParentKey())
 
-  def ruleSets: Vector[ValidationRuleSet[T, _]]
+trait Validator[T] extends (T => Validated[Map[FailureKey, ValidationFailure], T]) {
 
-  def apply(obj: T): Validated[Seq[ValidationFailure], T] = {
-    var failures = Seq[ValidationFailure]()
-    ruleSets.foreach { ruleSet =>
-      ruleSet(obj) match {
-        case Success(_) => Nil
-        case Fail(f) => {
-          failures = failures ++ f
-        }
-      }
+  def ruleSets: Seq[ValidationRuleSet[T, _]]
 
-    }
-    if (failures.isEmpty) Success(obj) else Fail(failures)
+  def apply(obj: T): Validated[Map[FailureKey, ValidationFailure], T] = {
+    Success(obj)
+//    var failures = Seq[ValidationFailure]()
+//    ruleSets.foreach { ruleSet =>
+//      ruleSet(obj) match {
+//        case Success(_) => Nil
+//        case Fail(f) => {
+//          failures = failures ++ f
+//        }
+//      }
+//
+//    }
+//    if (failures.isEmpty) Success(obj) else Fail(failures)
   }
 
   private def concat(v1: Seq[ValidationFailure], v2: Seq[ValidationFailure]): Seq[ValidationFailure] = {
