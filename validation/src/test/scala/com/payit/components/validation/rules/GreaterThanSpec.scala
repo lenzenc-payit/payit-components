@@ -1,7 +1,7 @@
 package com.payit.components.validation.rules
 
-import com.payit.components.validation.ValidationMatchers
 import org.specs2.mutable.Specification
+import org.specs2.validation.ValidationMatchers
 
 class GreaterThanSpec extends Specification with ValidationMatchers with OrderingRules {
 
@@ -19,8 +19,8 @@ class GreaterThanSpec extends Specification with ValidationMatchers with Orderin
       }
     }
     "when fails" >> {
-      "it should have correct rule violation key" >> {
-        rule(2) should beFailing.like { case f => f.key must_== "greaterthan" }
+      "it should have correct rule violation ruleKey" >> {
+        rule(2) should beFailing.like { case f => f.ruleKey must_== "greaterthan" }
       }
       "it should have correct rule violation message" >> {
         rule(2) should beFailing.like { case f => f.message must_== "should be greater than 5" }

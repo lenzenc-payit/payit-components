@@ -1,7 +1,7 @@
 package com.payit.components.validation.rules
 
-import com.payit.components.validation.ValidationMatchers
 import org.specs2.mutable.Specification
+import org.specs2.validation.ValidationMatchers
 
 class StartsWithSpec extends Specification with StringRules with ValidationMatchers {
 
@@ -19,8 +19,8 @@ class StartsWithSpec extends Specification with StringRules with ValidationMatch
       }
     }
     "when fails" >> {
-      "it should have correct rule violation key" >> {
-        rule("foo") should beFailing.like { case f => f.key must_== "startswith" }
+      "it should have correct rule violation ruleKey" >> {
+        rule("foo") should beFailing.like { case f => f.ruleKey must_== "startswith" }
       }
       "it should have correct rule violation message" >> {
         rule("foo") should beFailing.like { case f => f.message must_== "should start with foo" }

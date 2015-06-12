@@ -1,9 +1,8 @@
 package com.payit.components.validation
 
-import com.payit.components.validation.rules.{RuleViolation, GeneralRules, ValidationRule}
+import com.payit.components.validation.rules.{GeneralRules, ValidationRule}
 import org.specs2.mutable.Specification
-
-import scalaz._
+import org.specs2.validation.ValidationMatchers
 
 class ValidationRuleSetSpec extends Specification with ValidationMatchers with GeneralRules {
 
@@ -26,28 +25,33 @@ class ValidationRuleSetSpec extends Specification with ValidationMatchers with G
       "it should return Failure" >> {
         val model = TestModel()
         val ruleSet = buildRuleSet(Vector(MaxLength(2)), model)
-        ruleSet(model) should beFailing
+        ruleSet(model) should beFailing(Seq(ValidationFailure(
+          ParentKey("parent"),
+          "v1",
+          "maxlength",
+          "maximum is 2 characters",
+          Seq("2"))))
       }
-      "it should return correct RuleViolation" >> {
-        val violations = failureRun(Vector(MaxLength(2)))
-        violations.map(_.key) must contain(exactly("maxlength"))
+      "it should return correct ValidationFailure" >> {
+        val failures = failureRun(Vector(MaxLength(2)))
+        failures.map(_.ruleKey) must contain(exactly("maxlength"))
       }
       "for 2 rules" >> {
-        "it should return correct 2 RuleViolations" >> {
-          val violations = failureRun(Vector(MaxLength(2), StartsWith("failed")))
-          violations.map(_.key) must contain(exactly("maxlength", "startswith"))
+        "it should return correct 2 ValidationFailure" >> {
+          val failures = failureRun(Vector(MaxLength(2), StartsWith("failed")))
+          failures.map(_.ruleKey) must contain(exactly("maxlength", "startswith"))
         }
       }
       "when there are multiple of the same rule types" >> {
-        "it should return only 1 RuleViolation" >> {
-          val violations = failureRun(Vector(MaxLength(2), MaxLength(2)))
-          violations.map(_.key) must contain(exactly("maxlength"))
+        "it should return only 1 ValidationFailure" >> {
+          val failures = failureRun(Vector(MaxLength(2), MaxLength(2)))
+          failures.map(_.ruleKey) must contain(exactly("maxlength"))
         }
       }
       "when there are multiple and 2 are of the same type" >> {
-        "it should return only 2 RuleViolations" >> {
-          val violations = failureRun(Vector(MaxLength(2), MaxLength(2), StartsWith("failed")))
-          violations.map(_.key) must contain(exactly("maxlength", "startswith"))
+        "it should return only 2 ValidationFailure" >> {
+          val failures = failureRun(Vector(MaxLength(2), MaxLength(2), StartsWith("failed")))
+          failures.map(_.ruleKey) must contain(exactly("maxlength", "startswith"))
         }
       }
     }
@@ -64,12 +68,12 @@ class ValidationRuleSetSpec extends Specification with ValidationMatchers with G
 
   }
 
-  private def failureRun(ruleVector: Vector[ValidationRule[String]], model: TestModel = TestModel()): Vector[RuleViolation] = {
+  private def failureRun(ruleVector: Vector[ValidationRule[String]], model: TestModel = TestModel()): Seq[ValidationFailure] = {
 
     val result = buildRuleSet(ruleVector, model)(model)
     result should beFailing
     result match {
-      case Failure(f) => f
+      case Fail(f) => f
       case _ => sys.error("match should of be a failure!")
     }
 
@@ -77,7 +81,8 @@ class ValidationRuleSetSpec extends Specification with ValidationMatchers with G
 
   private def buildRuleSet(ruleVector: Vector[ValidationRule[String]], model: TestModel = TestModel()): ValidationRuleSet[TestModel, String] = {
     new ValidationRuleSet[TestModel, String] {
-      val paramName = "v1"
+      val parentKey = ParentKey("parent")
+      val key = "v1"
       val mapper: (TestModel) => String = { m => m.v1 }
       val rules = ruleVector
     }

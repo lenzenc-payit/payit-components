@@ -1,34 +1,31 @@
 package com.payit.components.validation
 
-import com.payit.components.validation.rules.RuleViolation
+case class FailureKey(key: String, parentKey: ParentKey = ParentKey())
 
-import scalaz._
-import Scalaz._
+trait Validator[T] extends (T => Validated[Map[FailureKey, Seq[ValidationFailure]], T]) {
 
-trait Validator[T] extends (T => Validation[ValidationFailure, T]) {
+  def ruleSets: Seq[ValidationRuleSet[T, _]]
 
-  def ruleSets: Vector[ValidationRuleSet[T, _]]
-
-  def apply(obj: T): Validation[ValidationFailure, T] = {
-    var failures = Map[String,Vector[RuleViolation]]()
+  def apply(obj: T): Validated[Map[FailureKey, Seq[ValidationFailure]], T] = {
+    var failures = Map[FailureKey, Seq[ValidationFailure]]()
     ruleSets.foreach { ruleSet =>
       ruleSet(obj) match {
         case Success(_) => Nil
-        case Failure(f) => {
+        case Fail(f) => {
           failures = failures + (
-            ruleSet.paramName ->
-            concat(failures.getOrElse(ruleSet.paramName, Vector.empty[RuleViolation]), f)
+            FailureKey(ruleSet.key, ruleSet.parentKey) ->
+            concat(failures.getOrElse(FailureKey(ruleSet.key, ruleSet.parentKey), Seq.empty[ValidationFailure]), f)
           )
         }
       }
-
     }
-    if (failures.isEmpty) obj.success else ValidationFailure(failures).failure
+
+    if (failures.isEmpty) Success(obj) else Fail(failures)
   }
 
-  private def concat(v1: Vector[RuleViolation], v2: Vector[RuleViolation]): Vector[RuleViolation] = {
-    val keys = v1.map(_.key)
-    v1 ++ v2.filter { v => !keys.contains(v.key) }
+  private def concat(v1: Seq[ValidationFailure], v2: Seq[ValidationFailure]): Seq[ValidationFailure] = {
+    val ruleKeys = v1.map{ f => f.ruleKey}
+    v1 ++ v2.filter { f => !ruleKeys.contains(f.ruleKey) }
   }
 
 }

@@ -1,26 +1,29 @@
 package com.payit.components.validation
 
-import com.payit.components.validation.rules.{RuleViolation, ValidationRule}
+import com.payit.components.validation.rules.ValidationRule
 
-import scalaz._
-import Scalaz._
-
-trait ValidationRuleSet[T, V] extends (T => Validation[Vector[RuleViolation], T]) {
-  def paramName: String
+trait ValidationRuleSet[T, V] extends (T => Validated[Seq[ValidationFailure], T]) {
+  def parentKey: ParentKey
+  def key: String
   def mapper: (T) => V
-  def rules: Vector[ValidationRule[V]]
+  def rules: Seq[ValidationRule[V]]
 
-  def apply(obj: T): Validation[Vector[RuleViolation], T] = {
-    var violations = Vector[RuleViolation]()
+  def apply(obj: T): Validated[Seq[ValidationFailure], T] = {
+    var failures = Seq[ValidationFailure]()
     rules.foreach { rule =>
       rule(mapper(obj)) match {
-        case Failure(f) => {
-          if (!violations.map(_.key).contains(f.key)) violations = violations :+ f
+        case Fail(f) => {
+          if (!failures.map(_.ruleKey).contains(f.ruleKey)) failures = failures :+ ValidationFailure(
+            parentKey,
+            key,
+            f.ruleKey,
+            f.message,
+            f.params)
         }
         case _ => Nil
       }
     }
-    if (violations.isEmpty) obj.success else violations.failure
+    if (failures.isEmpty) Success(obj) else Fail(failures)
   }
 
 }

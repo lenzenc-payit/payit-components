@@ -1,10 +1,8 @@
 package com.payit.components.validation
 
-import com.payit.components.validation.rules.RuleViolation
 import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
-
-import scalaz._
+import org.specs2.validation.ValidationMatchers
 
 class ValidatorSpec extends Specification with ValidationMatchers with Mockito {
 
@@ -12,71 +10,138 @@ class ValidatorSpec extends Specification with ValidationMatchers with Mockito {
   val model = TestModel()
 
   ".apply" >> {
-    "when there are no failures" >> {
+    "when validation is successful" >> {
       "it should return object being validated" >> {
         val ruleSet = mock[ValidationRuleSet[TestModel, String]]
         ruleSet.apply(model) returns Success[TestModel](model)
         validator(ruleSet)(model) should beSuccessful(model)
       }
     }
-    "when there are failures" >> {
-      "it should return a map with expected key" >> {
-        val ruleSet = mockFailedRuleSet("v1", "key1", "msg1", model)
-        validator(ruleSet)(model) should beFailing.like { case failure =>
-          failure.failures must haveKey("v1")
-        }
-      }
-      "it should return a map with expected RuleViolation" >> {
-        val ruleSet = mockFailedRuleSet("v1", "key1", "msg1", model)
-        validator(ruleSet)(model) should beFailing.like { case failure =>
-          val violations = failure.failures.get("v1")
-          violations must beSome
-          violations.get.map(_.key) must contain(exactly("key1"))
-        }
-      }
-      "against multiple ValidationRuleSets" >> {
-        val ruleSet1 = mockFailedRuleSet("v1", "key1", "msg1", model)
-        val ruleSet2 = mockFailedRuleSet("v2", "key2", "msg1", model)
-        "it should return a map with expected keys" >> {
-          validator(ruleSet1, ruleSet2)(model) should beFailing.like { case failure =>
-            failure.failures must haveKeys("v1", "v2")
+    "when validation fails" >> {
+      "using one ValidationRuleSet" >> {
+        "with no ParentKey" >> {
+          val ruleSet = mockFailedRuleSet("v1", "rule1", "msg1", model)
+          "it should return expected ValidationFailure" >> {
+            validator(ruleSet)(model) should beFailing(Map(
+              FailureKey("v1") -> Seq(ValidationFailure(ParentKey(), "v1", "rule1", "msg1"))
+            ))
           }
         }
-        "it should return a map with expected RuleViolations" >> {
-          validator(ruleSet1, ruleSet2)(model) should beFailing.like { case failure =>
-            val violations1 = failure.failures.get("v1")
-            val violations2 = failure.failures.get("v2")
-            violations1 must beSome
-            violations1.get.map(_.key) must contain(exactly("key1"))
-            violations2 must beSome
-            violations2.get.map(_.key) must contain(exactly("key2"))
+        "with a ParentKey" >> {
+          val ruleSet = mockFailedRuleSet("v1", "rule1", "msg1", model, ParentKey("parent"))
+          "it should return expected ValidationFailure" >> {
+            validator(ruleSet)(model) should beFailing(Map(
+                FailureKey("v1", ParentKey("parent")) -> Seq(ValidationFailure(ParentKey("parent"), "v1", "rule1", "msg1"))
+            ))
           }
         }
       }
-      "when multiple ValidationRuleSets have the same paramName" >> {
-        val ruleSet1 = mockFailedRuleSet("v1", "key1", "msg1", model)
-        "it should return a map with expected key" >> {
-          val ruleSet2 = mockFailedRuleSet("v1", "key2", "msg1", model)
-          validator(ruleSet1, ruleSet2)(model) should beFailing.like { case failure =>
-            failure.failures must haveKeys("v1")
+      "using 2 ValidationRuleSets" >> {
+        "when both do not have a ParentKey" >> {
+          "and the keys are different" >> {
+            val ruleSet1 = mockFailedRuleSet("v1", "rule1", "msg1", model)
+            val ruleSet2 = mockFailedRuleSet("v2", "rule1", "msg1", model)
+            "it should return expected ValidationFailures" >> {
+              validator(ruleSet1, ruleSet2)(model) should beFailing(Map(
+                FailureKey("v1") -> Seq(ValidationFailure(ParentKey(), "v1", "rule1", "msg1")),
+                FailureKey("v2") -> Seq(ValidationFailure(ParentKey(), "v2", "rule1", "msg1"))
+              ))
+            }
+          }
+          "and the keys are the same" >> {
+            val ruleSet1 = mockFailedRuleSet("v1", "rule1", "msg1", model)
+            val ruleSet2 = mockFailedRuleSet("v1", "rule2", "msg2", model)
+            "but each uses a different ValidationRule" >> {
+              "it should return 1 ValidationFailure with a combination of both ValidationRule failures" >> {
+                validator(ruleSet1, ruleSet2)(model) should beFailing(Map(
+                  FailureKey("v1") -> Seq(
+                    ValidationFailure(ParentKey(), "v1", "rule1", "msg1"),
+                    ValidationFailure(ParentKey(), "v1", "rule2", "msg2")
+                  )
+                ))
+              }
+            }
+            "but each uses the same ValidationRule" >> {
+              val ruleSet1 = mockFailedRuleSet("v1", "rule1", "msg1", model)
+              val ruleSet2 = mockFailedRuleSet("v1", "rule1", "msg1", model)
+              "it should return 1 ValidationFailure with out duplicating a ValidationRule failure" >> {
+                validator(ruleSet1, ruleSet2)(model) should beFailing(Map(
+                  FailureKey("v1") -> Seq(
+                    ValidationFailure(ParentKey(), "v1", "rule1", "msg1")
+                  )
+                ))
+              }
+            }
           }
         }
-        "it should return a map with expected combines RuleViolations" >> {
-          val ruleSet2 = mockFailedRuleSet("v1", "key2", "msg1", model)
-          validator(ruleSet1, ruleSet2)(model) should beFailing.like { case failure =>
-            val violations = failure.failures.get("v1")
-            violations must beSome
-            violations.get.map(_.key) must contain(exactly("key1", "key2"))
+        "when both have a ParentKey" >> {
+          "and the parent keys are different" >> {
+            "and the keys are different" >> {
+              val ruleSet1 = mockFailedRuleSet("v1", "rule1", "msg1", model, ParentKey("parent1"))
+              val ruleSet2 = mockFailedRuleSet("v2", "rule1", "msg1", model, ParentKey("parent2"))
+              "it should return 2 expected ValidationFailures" >> {
+                validator(ruleSet1, ruleSet2)(model) should beFailing(Map(
+                  FailureKey("v1", ParentKey("parent1")) -> Seq(
+                    ValidationFailure(ParentKey("parent1"), "v1", "rule1", "msg1")
+                  ),
+                  FailureKey("v2", ParentKey("parent2")) -> Seq(
+                    ValidationFailure(ParentKey("parent2"), "v2", "rule1", "msg1")
+                  )
+                ))
+              }
+            }
+            "and the keys are the same" >> {
+              val ruleSet1 = mockFailedRuleSet("v1", "rule1", "msg1", model, ParentKey("parent1"))
+              val ruleSet2 = mockFailedRuleSet("v1", "rule1", "msg1", model, ParentKey("parent2"))
+              "it should return 2 expected ValidationFailures" >> {
+                validator(ruleSet1, ruleSet2)(model) should beFailing(Map(
+                  FailureKey("v1", ParentKey("parent1")) -> Seq(
+                    ValidationFailure(ParentKey("parent1"), "v1", "rule1", "msg1")
+                  ),
+                  FailureKey("v1", ParentKey("parent2")) -> Seq(
+                    ValidationFailure(ParentKey("parent2"), "v1", "rule1", "msg1")
+                  )
+                ))
+              }
+            }
           }
-        }
-        "and there are duplicated RuleViolations" >> {
-          "it should return a map with filtered out duplicates" >> {
-            val ruleSet2 = mockFailedRuleSet("v1", "key1", "msg1", model)
-            validator(ruleSet1, ruleSet2)(model) should beFailing.like { case failure =>
-              failure.failures must haveKeys("v1")
-              val violations = failure.failures.get("v1")
-              violations must beSome
-              violations.get.map(_.key) must contain(exactly("key1"))
+          "and the parent keys are the same" >> {
+            "and the keys are different" >> {
+              val ruleSet1 = mockFailedRuleSet("v1", "rule1", "msg1", model, ParentKey("parent1"))
+              val ruleSet2 = mockFailedRuleSet("v2", "rule1", "msg1", model, ParentKey("parent1"))
+              "it should return 2 expected ValidationFailures" >> {
+                validator(ruleSet1, ruleSet2)(model) should beFailing(Map(
+                  FailureKey("v1", ParentKey("parent1")) -> Seq(
+                    ValidationFailure(ParentKey("parent1"), "v1", "rule1", "msg1")
+                  ),
+                  FailureKey("v2", ParentKey("parent1")) -> Seq(
+                    ValidationFailure(ParentKey("parent1"), "v2", "rule1", "msg1")
+                  )
+                ))
+              }
+            }
+            "and the keys are the same" >> {
+              val ruleSet1 = mockFailedRuleSet("v1", "rule1", "msg1", model, ParentKey("parent1"))
+              val ruleSet2 = mockFailedRuleSet("v1", "rule2", "msg2", model, ParentKey("parent1"))
+              "it should return 1 ValidationFailure with a combination of both ValidationRule failures" >> {
+                validator(ruleSet1, ruleSet2)(model) should beFailing(Map(
+                  FailureKey("v1", ParentKey("parent1")) -> Seq(
+                    ValidationFailure(ParentKey("parent1"), "v1", "rule1", "msg1"),
+                    ValidationFailure(ParentKey("parent1"), "v1", "rule2", "msg2")
+                  )
+                ))
+              }
+              "but each uses the same ValidationRule" >> {
+                val ruleSet1 = mockFailedRuleSet("v1", "rule1", "msg1", model, ParentKey("parent1"))
+                val ruleSet2 = mockFailedRuleSet("v1", "rule1", "msg1", model, ParentKey("parent1"))
+                "it should return 1 ValidationFailure with out duplicating a ValidationRule failure" >> {
+                  validator(ruleSet1, ruleSet2)(model) should beFailing(Map(
+                    FailureKey("v1", ParentKey("parent1")) -> Seq(
+                      ValidationFailure(ParentKey("parent1"), "v1", "rule1", "msg1")
+                    )
+                  ))
+                }
+              }
             }
           }
         }
@@ -86,14 +151,21 @@ class ValidatorSpec extends Specification with ValidationMatchers with Mockito {
 
   private def validator(sets: ValidationRuleSet[TestModel, String]*): Validator[TestModel] = {
     new Validator[TestModel] {
-      val ruleSets = sets.toVector
+      val ruleSets = sets.toSeq
     }
   }
 
-  private def mockFailedRuleSet(paramName: String, key: String, msg: String, model: TestModel) = {
+  private def mockFailedRuleSet(
+    key: String,
+    ruleKey: String,
+    msg: String,
+    model: TestModel,
+    parentKey: ParentKey = ParentKey()) =
+  {
     val ruleSet = mock[ValidationRuleSet[TestModel, String]]
-    ruleSet.paramName returns paramName
-    ruleSet.apply(model) returns Failure[Vector[RuleViolation]](Vector(RuleViolation(key, msg)))
+    ruleSet.parentKey returns parentKey
+    ruleSet.key returns key
+    ruleSet.apply(model) returns Fail(Seq[ValidationFailure](ValidationFailure(parentKey, key, ruleKey, msg)))
     ruleSet
   }
 

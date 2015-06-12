@@ -19,7 +19,8 @@ class ValidatorGenerator[C <: Context, T : C#WeakTypeTag](val context: C, v: C#E
     case ValidationExprMatcher(ve: ValidationExpr) => {
       val rs = q"""
         new com.payit.components.validation.ValidationRuleSet[${weakTypeOf[ T ]},${ve.validationObject.tpe.typeSymbol}] {
-          val paramName = ${resetAttrs(ve.key)}
+          val parentKey = com.payit.components.validation.ParentKey()
+          val key = ${resetAttrs(ve.key)}
           val mapper = { ${prototype} => ${resetAttrs(ve.validationObject)} }
           val rules = ${ve.rules.toVector}
         }

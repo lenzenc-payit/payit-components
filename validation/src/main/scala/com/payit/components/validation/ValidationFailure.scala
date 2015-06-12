@@ -1,6 +1,3 @@
 package com.payit.components.validation
 
-import com.payit.components.validation.rules.RuleViolation
-import org.joda.time.DateTime
-
-case class ValidationFailure(failures: Map[String, Vector[RuleViolation]])
+case class ValidationFailure(parentKey: ParentKey, key: String, ruleKey: String, message: String, params: Seq[String] = Seq.empty)
